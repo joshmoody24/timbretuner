@@ -1,10 +1,9 @@
-import { createSignal } from "solid-js";
 import { AudioCtx } from "./core/audio-context";
 import heroImg from "./assets/hero.png";
 import solidLogo from "./assets/solid.svg";
 import viteLogo from "./assets/vite.svg";
 import "./App.css";
-import { TimbreController } from "./core/timbre-controller";
+import { TimbreController } from "./core/instrument-controller";
 
 function App() {
   return (
