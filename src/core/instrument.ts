@@ -1,33 +1,12 @@
 import { useContext } from "solid-js";
 import { AudioCtx } from "./audio-context";
-
-export type Hertz = number & {
-  __type: "hertz";
-};
-
-export function hertz(n: number): Hertz {
-  return n as Hertz;
-}
-
-export type Seconds = number & {
-  __type: "seconds";
-};
-
-export function seconds(n: number) {
-  return n as Seconds;
-}
-
-/** Between 0 and 1, inclusive */
-export type Volume = number & {
-  __type: "unit-interval-value";
-};
-
-export function volume(n: number) {
-  if (n > 1 || n < 0) {
-    throw new Error("Volume must be between 0 and 1");
-  }
-  return n as Volume;
-}
+import {
+  seconds,
+  volume,
+  type Hertz,
+  type Seconds,
+  type Volume,
+} from "./units";
 
 export interface Instrument {
   play(options: PlayOptions): void;
@@ -66,14 +45,14 @@ export function createInstrument(options: InstrumentOptions): Instrument {
 
       const oscillator = audioCtx.createOscillator();
       oscillator.type = "sine";
-      oscillator.frequency.value = playOptions.hertz;
+      oscillator.frequency.value = playOptions.hertz.number;
 
       const primaryGain = audioCtx.createGain();
-      primaryGain.gain.value = playOptions.volume;
+      primaryGain.gain.value = playOptions.volume.number;
       const gain = audioCtx.createGain();
       const durations = [attack, decay, sustainDuration, release];
       const timings = durations.reduce(
-        (acc, t) => [...acc, seconds(acc.at(-1)! + t)],
+        (acc, t) => [...acc, acc.at(-1)!.add(t)],
         [now],
       );
       const gains = [
@@ -89,15 +68,18 @@ export function createInstrument(options: InstrumentOptions): Instrument {
           gain: gains[i],
         }),
       );
-      gain.gain.setValueAtTime(initGainTarget.gain, initGainTarget.t);
+      gain.gain.setValueAtTime(
+        initGainTarget.gain.number,
+        initGainTarget.t.number,
+      );
       gainTargets.forEach((gt) =>
-        gain.gain.linearRampToValueAtTime(gt.gain, gt.t),
+        gain.gain.linearRampToValueAtTime(gt.gain.number, gt.t.number),
       );
 
       oscillator.connect(gain).connect(audioCtx.destination);
 
       oscillator.start();
-      oscillator.stop(timings.at(-1));
+      oscillator.stop(timings.at(-1)!.number);
     },
   };
 }

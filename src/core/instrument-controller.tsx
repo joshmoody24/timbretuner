@@ -1,17 +1,15 @@
 import { createStore } from "solid-js/store";
 import {
   createInstrument,
-  hertz,
-  seconds,
-  volume,
   type Instrument,
   type InstrumentOptions,
   type PlayOptions,
 } from "./instrument";
+import { hertz, seconds, volume } from "./units";
 
-const MIN_HERTZ = 20;
-const MAX_HERTZ = 20_000;
-const T = MAX_HERTZ / MIN_HERTZ;
+const MIN_HERTZ = hertz(20);
+const MAX_HERTZ = hertz(20_000);
+const T = MAX_HERTZ.divide(MIN_HERTZ);
 
 const DEFAULT_INSTRUMENT: InstrumentOptions = {
   envelope: {
@@ -45,7 +43,7 @@ export function TimbreController() {
             min={0}
             max={1}
             step={0.01}
-            value={playOptions.volume}
+            value={playOptions.volume.number}
             onInput={(e) =>
               setPlayOptions({
                 ...playOptions,
@@ -57,9 +55,9 @@ export function TimbreController() {
           <input
             id={`hertz-number`}
             type="number"
-            min={MIN_HERTZ}
-            max={MAX_HERTZ}
-            value={playOptions.hertz}
+            min={MIN_HERTZ.number}
+            max={MAX_HERTZ.number}
+            value={playOptions.hertz.number}
             onInput={(e) =>
               setPlayOptions({
                 ...playOptions,
@@ -73,13 +71,14 @@ export function TimbreController() {
             min={0}
             max={1}
             step={0.001}
-            value={logBase(T, playOptions.hertz / MIN_HERTZ)}
+            value={logBase(T, playOptions.hertz.divide(MIN_HERTZ))}
             onInput={(e) =>
               setPlayOptions({
                 ...playOptions,
                 hertz: hertz(
                   Math.round(
-                    MIN_HERTZ * Math.pow(T, parseFloat(e.target.value)),
+                    MIN_HERTZ.multiply(Math.pow(T, parseFloat(e.target.value)))
+                      .number,
                   ),
                 ),
               })
