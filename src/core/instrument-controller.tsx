@@ -14,11 +14,19 @@ const T = MAX_HERTZ.divide(MIN_HERTZ);
 const DEFAULT_INSTRUMENT: InstrumentDefinition = {
   envelope: {
     attack: seconds(0),
-    decay: seconds(0.5),
+    decay: seconds(0.3),
     sustain: volume(0.1),
-    release: seconds(0.2),
+    release: seconds(0.5),
   },
-  overtones: () => [],
+  overtones: ({ instrument, note }) =>
+    [1, 2, 3, 4, 5].map((i) => ({
+      instrument,
+      note: {
+        ...note,
+        hertz: note.hertz.multiply(i + 1),
+        volume: note.volume.divide(Math.pow(2, i)),
+      },
+    })),
 };
 
 const DEFAULT_PLAY_OPTIONS: Note = {

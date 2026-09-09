@@ -12,6 +12,7 @@ interface Unit<T extends string> {
   multiply(n: number): Unit<T>;
   divide(n: Unit<T>): number;
   divide(n: number): Unit<T>;
+  pow(n: number): Unit<T>;
   number: number;
 }
 
@@ -53,6 +54,7 @@ function buildNumericUnit<T extends string>(
       subtract: toUnitOp((a, b) => a - b),
       multiply: toUnitOpPartial((a, b) => a * b),
       divide,
+      pow: toUnitOpPartial((a, b) => Math.pow(a, b)),
       number: n,
     };
   };
